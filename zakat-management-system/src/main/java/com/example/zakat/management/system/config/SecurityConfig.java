@@ -61,36 +61,44 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
 
-                        // ── Public (no login required) ──────────────────────────────
+                        // Public (no login required)
                         .requestMatchers(HttpMethod.POST, "/api/users/register").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/auth/login").permitAll()
-                        .requestMatchers(HttpMethod.GET,  "/api/auth/refresh").permitAll()
-                        // Transparency pages — public-facing accountability showcase
-                        .requestMatchers(HttpMethod.GET,  "/api/report").permitAll()
-                        .requestMatchers(HttpMethod.GET,  "/api/history").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/auth/refresh").permitAll()
+                        // Transparency pages
+                        .requestMatchers(HttpMethod.GET, "/api/report").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/history").permitAll()
 
-                        // ── Admin only (admin can also access donor/beneficiary endpoints below) ──
+                        // Admin only
                         .requestMatchers(HttpMethod.POST, "/api/assignments").hasRole(Role.ADMIN.name())
-                        .requestMatchers(HttpMethod.GET,  "/api/assignments").hasRole(Role.ADMIN.name())
-                        .requestMatchers(HttpMethod.GET,  "/api/beneficiaries/queue").hasRole(Role.ADMIN.name())
-                        .requestMatchers(HttpMethod.GET,  "/api/dashboard").hasRole(Role.ADMIN.name())
-                        .requestMatchers(HttpMethod.GET,  "/api/users").hasRole(Role.ADMIN.name())
-                        .requestMatchers(HttpMethod.GET,  "/api/receipts").hasRole(Role.ADMIN.name())
+                        .requestMatchers(HttpMethod.GET, "/api/assignments").hasRole(Role.ADMIN.name())
+                        .requestMatchers(HttpMethod.GET, "/api/beneficiaries/queue").hasRole(Role.ADMIN.name())
+                        .requestMatchers(HttpMethod.GET, "/api/dashboard").hasRole(Role.ADMIN.name())
+                        .requestMatchers(HttpMethod.GET, "/api/users").hasRole(Role.ADMIN.name())
+                        .requestMatchers(HttpMethod.GET, "/api/receipts").hasRole(Role.ADMIN.name())
 
-                        // ── Donor + Admin ────────────────────────────────────────────
+                        // Donor + Admin
                         .requestMatchers(HttpMethod.POST, "/api/donations")
                         .hasAnyRole(Role.DONOR.name(), Role.ADMIN.name())
-                        .requestMatchers(HttpMethod.GET,  "/api/receipts/donation/**")
+                        .requestMatchers(HttpMethod.GET, "/api/receipts/donation/**")
+                        .hasAnyRole(Role.DONOR.name(), Role.ADMIN.name())
+                        .requestMatchers(HttpMethod.POST, "/api/inventory")
+                        .hasAnyRole(Role.DONOR.name(), Role.ADMIN.name())
+                        .requestMatchers(HttpMethod.GET, "/api/inventory/**")
                         .hasAnyRole(Role.DONOR.name(), Role.ADMIN.name())
 
-                        // ── Beneficiary + Admin ──────────────────────────────────────
+                        // Beneficiary + Admin
                         .requestMatchers(HttpMethod.POST, "/api/beneficiaries")
                         .hasAnyRole(Role.BENEFICIARY.name(), Role.ADMIN.name())
                         .requestMatchers(HttpMethod.POST, "/api/eligibility")
                         .hasAnyRole(Role.BENEFICIARY.name(), Role.ADMIN.name())
 
-                        // ── Any authenticated user ───────────────────────────────────
-                        .requestMatchers(HttpMethod.GET,    "/api/auth/me").authenticated()
+                        // Direct donation to beneficiary
+                        .requestMatchers(HttpMethod.POST, "/api/beneficiaries/*/donate")
+                        .hasAnyRole(Role.DONOR.name(), Role.ADMIN.name())
+
+                        // Any authenticated user
+                        .requestMatchers(HttpMethod.GET, "/api/auth/me").authenticated()
                         .requestMatchers(HttpMethod.DELETE, "/api/auth/logout").authenticated()
 
                         .anyRequest().authenticated()

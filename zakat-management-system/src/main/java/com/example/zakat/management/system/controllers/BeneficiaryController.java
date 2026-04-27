@@ -1,11 +1,10 @@
 package com.example.zakat.management.system.controllers;
 
-import com.example.zakat.management.system.dtos.request.BeneficiaryRegisterRequest;
+import com.example.zakat.management.system.dtos.request.BeneficiaryFormRequest;
 import com.example.zakat.management.system.dtos.response.BeneficiaryResponse;
 import com.example.zakat.management.system.services.BeneficiaryService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,12 +17,12 @@ public class BeneficiaryController {
 
     private final BeneficiaryService beneficiaryService;
 
-    @PostMapping
-    public ResponseEntity<BeneficiaryResponse> register(@Valid @RequestBody BeneficiaryRegisterRequest request) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(beneficiaryService.register(request));
+    @PatchMapping("/form")
+    public ResponseEntity<BeneficiaryResponse> submitForm(@Valid @RequestBody BeneficiaryFormRequest request) {
+        return ResponseEntity.ok(beneficiaryService.submitForm(request));
     }
 
-    @GetMapping
+    @GetMapping("")
     public ResponseEntity<List<BeneficiaryResponse>> getAllBeneficiaries() {
         return ResponseEntity.ok(beneficiaryService.getAllBeneficiaries());
     }

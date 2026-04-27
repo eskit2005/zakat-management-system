@@ -21,8 +21,11 @@ public class EmailService {
         if(role.equals(Role.BENEFICIARY.name())){
             message.setText("Thanks for signing up "+name+" , You are now a  beneficiary.");
         }
-        else{
+        else if(role.equals(Role.ADMIN.name())){
             message.setText("Thanks for signing up "+name+" , we are thrilled at the prospect of stealing your money in the form of a donation ");
+        }
+        else{
+            message.setText("Welcome dear admin, we are thrilled to have you ");
         }
 
         javaMailSender.send(message);

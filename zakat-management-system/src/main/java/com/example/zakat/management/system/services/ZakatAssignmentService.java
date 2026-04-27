@@ -3,16 +3,21 @@ package com.example.zakat.management.system.services;
 import com.example.zakat.management.system.dtos.request.ZakatAssignmentRequest;
 import com.example.zakat.management.system.dtos.response.ZakatAssignmentResponse;
 import com.example.zakat.management.system.entities.Beneficiary;
-import com.example.zakat.management.system.entities.DistributionHistory;
+import com.example.zakat.management.system.entities.BeneficiaryAdminZakat;
+import com.example.zakat.management.system.entities.BeneficiaryAdminZakatId;
+import com.example.zakat.management.system.entities.BeneficiaryDonor;
+import com.example.zakat.management.system.entities.Inventory;
 import com.example.zakat.management.system.entities.ZakatAssignment;
 import com.example.zakat.management.system.events.ZakatAssignedEvent;
 import com.example.zakat.management.system.exceptions.IneligibleBeneficiaryException;
 import com.example.zakat.management.system.exceptions.InsufficientFundsException;
 import com.example.zakat.management.system.exceptions.ResourceNotFoundException;
 import com.example.zakat.management.system.mappers.ZakatAssignmentMapper;
+import com.example.zakat.management.system.repositories.BeneficiaryAdminZakatRepository;
+import com.example.zakat.management.system.repositories.BeneficiaryDonorRepository;
 import com.example.zakat.management.system.repositories.BeneficiaryRepository;
-import com.example.zakat.management.system.repositories.DistributionHistoryRepository;
-import com.example.zakat.management.system.repositories.DonationRepository;
+import com.example.zakat.management.system.repositories.InventoryRepository;
+import com.example.zakat.management.system.repositories.UserRepository;
 import com.example.zakat.management.system.repositories.ZakatAssignmentRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
@@ -20,8 +25,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -30,9 +35,12 @@ public class ZakatAssignmentService {
     private final ApplicationEventPublisher applicationEventPublisher;
     private final ZakatAssignmentRepository zakatAssignmentRepository;
     private final BeneficiaryRepository beneficiaryRepository;
-    private final DonationRepository donationRepository;
-    private final DistributionHistoryRepository distributionHistoryRepository;
+    private final BeneficiaryDonorRepository beneficiaryDonorRepository;
+    private final BeneficiaryAdminZakatRepository beneficiaryAdminZakatRepository;
+    private final InventoryRepository inventoryRepository;
+    private final UserRepository userRepository;
     private final ZakatAssignmentMapper zakatAssignmentMapper;
+    private final BeneficiaryService beneficiaryService;
 
     @Transactional
     public ZakatAssignmentResponse assign(ZakatAssignmentRequest request) {
@@ -40,53 +48,85 @@ public class ZakatAssignmentService {
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "Beneficiary not found with id: " + request.getBeneficiaryId()));
 
-        if (beneficiary.getEligibilityCheck() == null
-                || !beneficiary.getEligibilityCheck().getIsEligible()) {
+        if (beneficiary.getEligible() == null || !beneficiary.getEligible()) {
             throw new IneligibleBeneficiaryException("Beneficiary is not eligible for zakat");
         }
 
-        if (beneficiary.getZakatAssignment() != null) {
-            throw new IneligibleBeneficiaryException("Beneficiary has already received zakat");
+        if (request.getInventoryId() != null && request.getAmountAssigned() != null) {
+            throw new IllegalArgumentException("Provide either money OR inventory, not both");
+        }
+        if (request.getInventoryId() == null && request.getAmountAssigned() == null) {
+            throw new IllegalArgumentException("Provide either money OR inventory");
         }
 
-        BigDecimal totalDonated  = donationRepository.sumAllAmounts();
-        BigDecimal totalAssigned = zakatAssignmentRepository.sumAllAmounts();
-        BigDecimal remaining     = totalDonated.subtract(totalAssigned);
-
-        if (request.getAmountAssigned().compareTo(remaining) > 0) {
-            throw new InsufficientFundsException(
-                    "Insufficient funds. Requested: " + request.getAmountAssigned()
-                            + ", Available: " + remaining);
-        }
-
+        BigDecimal receivedAmount;
         ZakatAssignment assignment = new ZakatAssignment();
-        assignment.setBeneficiary(beneficiary);
-        assignment.setAmountAssigned(request.getAmountAssigned());
+
+        if (request.getInventoryId() != null) {
+            Inventory inventory = inventoryRepository.findById(request.getInventoryId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Inventory not found with id: " + request.getInventoryId()));
+            if (inventory.getStatus() != null && !"AVAILABLE".equals(inventory.getStatus())) {
+                throw new IllegalStateException("Inventory item is not available for assignment");
+            }
+            assignment.setInventory(inventory);
+            receivedAmount = inventory.getAppoxValue();
+            if (receivedAmount == null) {
+                throw new IllegalArgumentException("Inventory item has no approximate value set");
+            }
+            inventory.setStatus("ASSIGNED");
+            inventoryRepository.save(inventory);
+        } else {
+            List<BeneficiaryDonor> allDonations = beneficiaryDonorRepository.findAll();
+            BigDecimal totalDonated = allDonations.stream()
+                    .map(BeneficiaryDonor::getAmount)
+                    .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+            BigDecimal totalAssigned = zakatAssignmentRepository.findAll().stream()
+                    .map(ZakatAssignment::getAmountAssigned)
+                    .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+            BigDecimal remaining = totalDonated.subtract(totalAssigned);
+
+            if (request.getAmountAssigned().compareTo(remaining) > 0) {
+                throw new InsufficientFundsException(
+                        "Insufficient funds. Requested: " + request.getAmountAssigned()
+                                + ", Available: " + remaining);
+            }
+            receivedAmount = request.getAmountAssigned();
+        }
+
+        assignment.setAmountAssigned(receivedAmount);
         ZakatAssignment saved = zakatAssignmentRepository.save(assignment);
 
-        DistributionHistory history = new DistributionHistory();
-        history.setAssignment(saved);
-        history.setBeneficiaryName(beneficiary.getFullName());
-        history.setAmountReceived(request.getAmountAssigned());
-        history.setDistributionDate(LocalDate.now());
-        distributionHistoryRepository.save(history);
+        BigDecimal currentTotal = beneficiary.getTotalReceivedValue() != null
+                ? beneficiary.getTotalReceivedValue()
+                : BigDecimal.ZERO;
+        beneficiary.setTotalReceivedValue(currentTotal.add(receivedAmount));
+        beneficiaryService.recalculatePriorityScore(beneficiary);
+        beneficiaryRepository.save(beneficiary);
 
-        // Event carries plain values (not lazy entities) so @Async listener runs safely
-        // after the transaction commits with no session dependency
-        applicationEventPublisher.publishEvent(new ZakatAssignedEvent(
-                beneficiary.getUser().getEmail(),
-                beneficiary.getFullName(),
-                saved.getAmountAssigned()
-        ));
+        BeneficiaryAdminZakat baz = new BeneficiaryAdminZakat();
+        baz.getId().setZId(saved.getId());
+        baz.getId().setBId(beneficiary.getId());
+        baz.getId().setAId(request.getAdminId());
+        beneficiaryAdminZakatRepository.save(baz);
+
+        var user = userRepository.findById(beneficiary.getId()).orElse(null);
+        if (user != null) {
+            applicationEventPublisher.publishEvent(new ZakatAssignedEvent(
+                    user.getEmail(),
+                    user.getName(),
+                    saved.getAmountAssigned()
+            ));
+        }
 
         return zakatAssignmentMapper.toResponse(saved);
     }
 
-    // ZakatAssignmentMapper accesses assignment.getBeneficiary().getId/fullName (LAZY)
     @Transactional(readOnly = true)
     public List<ZakatAssignmentResponse> getAllAssignments() {
         return zakatAssignmentRepository.findAll().stream()
                 .map(zakatAssignmentMapper::toResponse)
-                .toList();
+                .collect(Collectors.toList());
     }
 }

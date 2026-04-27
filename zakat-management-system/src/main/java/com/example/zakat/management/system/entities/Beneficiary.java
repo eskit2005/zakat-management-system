@@ -1,43 +1,66 @@
 package com.example.zakat.management.system.entities;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.DiscriminatorValue;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.annotations.ColumnDefault;
+import java.math.BigDecimal;
 import java.time.Instant;
 
 @Getter
 @Setter
 @Entity
-@Table(name = "beneficiaries", schema = "Zakat")
-public class Beneficiary {
+@Table(name = "beneficiary")
+@DiscriminatorValue("BENEFICIARY")
+public class Beneficiary extends User {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
-    private Long id;
+    @Column(name = "registered", insertable = false, updatable = false)
+    private Instant registered;
 
-    @OneToOne()
-    @JoinColumn(name = "user_id", nullable = false, unique = true)
-    private User user;
+    @Column(name = "reason", columnDefinition = "TEXT")
+    private String reason;
 
-    @Column(name = "full_name", nullable = false, length = 100)
-    private String fullName;
+    @Column(name = "dependents")
+    private Integer dependents;
 
-    @ColumnDefault("0")
-    @Column(name = "priority_score", nullable = false)
-    private Integer priorityScore = 0;
+    @Column(name = "income", precision = 12, scale = 2)
+    private BigDecimal income;
 
-    @ColumnDefault("0")
-    @Column(name = "is_emergency", nullable = false)
-    private Boolean isEmergency = false;
+    @Column(name = "emergency")
+    private Boolean emergency;
 
-    @Column(name = "registered_at", insertable = false, updatable = false)
-    private Instant registeredAt;
+    @Column(name = "disability")
+    private Boolean disability;
 
-    @OneToOne(mappedBy = "beneficiary", cascade = CascadeType.ALL, orphanRemoval = true)
-    private EligibilityCheck eligibilityCheck;
+    @Column(name = "age")
+    private Integer age;
 
-    @OneToOne(mappedBy = "beneficiary")
-    private ZakatAssignment zakatAssignment;
+    @Column(name = "is_orphan")
+    private Boolean isOrphan;
+
+    @Column(name = "has_debt")
+    private Boolean hasDebt;
+
+    @Column(name = "unemployed")
+    private Boolean unemployed;
+
+    @Column(name = "illness")
+    private Boolean illness;
+
+    @Column(name = "priority_score")
+    private Integer priorityScore;
+
+    @Column(name = "eligible")
+    private Boolean eligible;
+
+    @Column(name = "reject_reason", columnDefinition = "TEXT")
+    private String rejectReason;
+
+    @Column(name = "checked_at", insertable = false, updatable = false)
+    private Instant checkedAt;
+
+    @Column(name = "total_received_value", precision = 12, scale = 2)
+    private BigDecimal totalReceivedValue = BigDecimal.ZERO;
 }

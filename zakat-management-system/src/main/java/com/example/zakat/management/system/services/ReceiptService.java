@@ -17,7 +17,6 @@ public class ReceiptService {
     private final ReceiptRepository receiptRepository;
     private final ReceiptMapper receiptMapper;
 
-    // ReceiptMapper accesses receipt.getDonation().getId() (LAZY OneToOne)
     @Transactional(readOnly = true)
     public List<ReceiptResponse> getAllReceipts() {
         return receiptRepository.findAll().stream()
@@ -34,10 +33,9 @@ public class ReceiptService {
     }
 
     @Transactional(readOnly = true)
-    public ReceiptResponse getReceiptByDonationId(Long donationId) {
-        return receiptMapper.toResponse(
-                receiptRepository.findByDonationId(donationId)
-                        .orElseThrow(() -> new ResourceNotFoundException("No receipt found for donation id: " + donationId))
-        );
+    public List<ReceiptResponse> getReceiptsByDonorId(Long donorId) {
+        return receiptRepository.findByDId(donorId).stream()
+                .map(receiptMapper::toResponse)
+                .toList();
     }
 }

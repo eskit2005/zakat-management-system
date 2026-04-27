@@ -18,12 +18,13 @@ public class ZakatAssignmentController {
 
     private final ZakatAssignmentService zakatAssignmentService;
 
-    @PostMapping
-    public ResponseEntity<ZakatAssignmentResponse> assign(@Valid @RequestBody ZakatAssignmentRequest request) {
+    @PostMapping("")
+    public ResponseEntity<ZakatAssignmentResponse> assign(
+            @Valid @RequestBody ZakatAssignmentRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED).body(zakatAssignmentService.assign(request));
     }
 
-    @GetMapping
+    @GetMapping("")
     public ResponseEntity<List<ZakatAssignmentResponse>> getAllAssignments() {
         return ResponseEntity.ok(zakatAssignmentService.getAllAssignments());
     }

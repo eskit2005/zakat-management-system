@@ -7,8 +7,7 @@ import java.time.Instant;
 @Data
 public class ZakatAssignmentResponse {
     private Long id;
-    private Long beneficiaryId;
-    private String beneficiaryName;
     private BigDecimal amountAssigned;
+    private Long invenId;
     private Instant assignedAt;
 }

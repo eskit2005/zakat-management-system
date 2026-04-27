@@ -7,9 +7,8 @@ import java.time.Instant;
 @Data
 public class DonationResponse {
     private Long id;
-    private Long userId;
+    private String recepNum;
     private String donorName;
     private BigDecimal amount;
-    private Instant donatedAt;
-    private ReceiptResponse receipt;
+    private Instant issuedAt;
 }

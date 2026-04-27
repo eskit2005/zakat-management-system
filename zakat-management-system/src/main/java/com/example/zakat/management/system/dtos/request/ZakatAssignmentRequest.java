@@ -12,6 +12,10 @@ public class ZakatAssignmentRequest {
     private Long beneficiaryId;
 
     @NotNull
+    private Long adminId;
+
     @DecimalMin(value = "1.00", message = "Assignment amount must be at least 1.00")
     private BigDecimal amountAssigned;
+
+    private Long inventoryId;
 }

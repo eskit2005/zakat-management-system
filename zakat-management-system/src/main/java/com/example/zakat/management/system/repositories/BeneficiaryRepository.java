@@ -1,46 +1,35 @@
 package com.example.zakat.management.system.repositories;
 
 import com.example.zakat.management.system.entities.Beneficiary;
-import org.jspecify.annotations.NullMarked;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
 
+@Repository
 public interface BeneficiaryRepository extends JpaRepository<Beneficiary, Long> {
 
-    @Query(value = "SELECT * FROM beneficiaries WHERE user_id = :userId LIMIT 1", nativeQuery = true)
-    Optional<Beneficiary> findByUserId(@Param("userId") Long userId);
-
-    @NullMarked
-    @Query(value= "Select * From beneficiaries Where id = :id", nativeQuery = true)
+    @Query(value = "SELECT * FROM beneficiary WHERE id = :id", nativeQuery = true)
     Optional<Beneficiary> findById(@Param("id") Long id);
 
-    @Query(value = "SELECT COUNT(*) FROM beneficiaries WHERE user_id = :userId", nativeQuery = true)
-    int countByUserId(@Param("userId") Long userId);
-
-    @Query(value="SELECT * FROM beneficiaries", nativeQuery = true)
+    @Query(value = "SELECT * FROM beneficiary", nativeQuery = true)
     List<Beneficiary> findAll();
 
-    @Query(value="Select Count(*) From beneficiaries",nativeQuery = true)
+    @Query(value = "SELECT COUNT(*) FROM beneficiary", nativeQuery = true)
     long count();
 
+    @Query(value = "SELECT COUNT(*) FROM beneficiary WHERE id = :id", nativeQuery = true)
+    int countById(@Param("id") Long id);
+
     @Query(value = """
-            SELECT b.* FROM beneficiaries b
-            INNER JOIN eligibility_checks ec ON ec.beneficiary_id = b.id
-            LEFT JOIN zakat_assignments za ON za.beneficiary_id = b.id
-            WHERE ec.is_eligible = TRUE
-              AND za.id IS NULL
-            ORDER BY b.is_emergency DESC, b.priority_score DESC
+            SELECT b.* FROM beneficiary b
+            WHERE b.eligible = TRUE
+            ORDER BY b.priority_score DESC
             """, nativeQuery = true)
     List<Beneficiary> findEligibleQueue();
 
-    //Meaning of this query:
-    // a list of beneficiaries who are eligible according to eligibility checks,
-    // have not yet received any Zakat assignment,
-    // and we sort them so that emergencies and high-priority cases come first.
-
-
+    List<Beneficiary> findByCheckedAtIsNull();
 }

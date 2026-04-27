@@ -8,7 +8,9 @@ import java.time.Instant;
 @Getter
 @Setter
 @Entity
-@Table(name = "users", schema = "Zakat")
+@Table(name = "user")
+@Inheritance(strategy = InheritanceType.JOINED)
+@DiscriminatorColumn(name = "role")
 public class User {
 
     @Id
@@ -25,10 +27,9 @@ public class User {
     @Column(name = "password", nullable = false)
     private String password;
 
-
-    @Column(name = "role")
+    @Column(name = "role", nullable = false, insertable = false, updatable = false)
     private String role;
 
-    @Column(name = "created_at", insertable = false,updatable = false)
+    @Column(name = "created_at", insertable = false, updatable = false)
     private Instant createdAt;
 }

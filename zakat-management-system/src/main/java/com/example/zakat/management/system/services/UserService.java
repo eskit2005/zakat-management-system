@@ -5,12 +5,14 @@ import com.example.zakat.management.system.dtos.response.UserResponse;
 import com.example.zakat.management.system.entities.User;
 import com.example.zakat.management.system.events.UserRegisteredEvent;
 import com.example.zakat.management.system.exceptions.DuplicateResourceException;
+import com.example.zakat.management.system.exceptions.ResourceNotFoundException;
 import com.example.zakat.management.system.mappers.UserMapper;
 import com.example.zakat.management.system.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -48,5 +50,13 @@ public class UserService {
         return userRepository.findAll().stream()
                 .map(userMapper::toResponse)
                 .toList();
+    }
+
+    @Transactional
+    public void deleteUser(Long id) {
+        if (!userRepository.existsById(id)) {
+            throw new ResourceNotFoundException("User not found with id: " + id);
+        }
+        userRepository.deleteById(id);
     }
 }

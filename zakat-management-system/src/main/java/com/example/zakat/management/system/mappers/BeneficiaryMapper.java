@@ -8,8 +8,7 @@ import org.mapstruct.Mapping;
 @Mapper(componentModel = "spring")
 public interface BeneficiaryMapper {
 
-    @Mapping(source = "user.id", target = "userId")
-    @Mapping(expression = "java(beneficiary.getEligibilityCheck() != null ? beneficiary.getEligibilityCheck().getIsEligible() : null)", target = "isEligible")
-    @Mapping(expression = "java(beneficiary.getZakatAssignment() != null)", target = "hasReceivedZakat")
+    @Mapping(source = "id", target = "userId")
+    @Mapping(source = "name", target = "fullName")
     BeneficiaryResponse toResponse(Beneficiary beneficiary);
 }

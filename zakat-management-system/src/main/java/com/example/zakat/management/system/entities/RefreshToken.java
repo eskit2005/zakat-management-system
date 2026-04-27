@@ -8,11 +8,11 @@ import java.time.Instant;
 @Getter
 @Setter
 @Entity
-@Table(name = "refresh_tokens", schema = "Zakat")
+@Table(name = "refresh_tokens")
 public class RefreshToken {
 
     @Id
-    @Column(name = "token", columnDefinition = "TEXT")
+    @Column(name = "token", length = 255)
     private String token;
 
     @Column(name = "issued_at", nullable = false)
