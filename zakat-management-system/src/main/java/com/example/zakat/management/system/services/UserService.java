@@ -2,6 +2,9 @@ package com.example.zakat.management.system.services;
 
 import com.example.zakat.management.system.dtos.request.RegisterRequest;
 import com.example.zakat.management.system.dtos.response.UserResponse;
+import com.example.zakat.management.system.entities.Admin;
+import com.example.zakat.management.system.entities.Beneficiary;
+import com.example.zakat.management.system.entities.Donor;
 import com.example.zakat.management.system.entities.User;
 import com.example.zakat.management.system.events.UserRegisteredEvent;
 import com.example.zakat.management.system.exceptions.DuplicateResourceException;
@@ -30,18 +33,27 @@ public class UserService {
             throw new DuplicateResourceException("Email already in use: " + request.getEmail());
         }
 
-        User user = new User();
+        User user;
+        String role = request.getRole();
+
+        if ("ADMIN".equals(role)) {
+            user = new Admin();
+        } else if ("DONOR".equals(role)) {
+            user = new Donor();
+        } else if ("BENEFICIARY".equals(role)) {
+            user = new Beneficiary();
+        } else {
+            throw new IllegalArgumentException("Invalid role: " + role);
+        }
+
         user.setName(request.getName());
         user.setEmail(request.getEmail());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
-        user.setRole(request.getRole());
+        user.setRole(role);
 
         User saved = userRepository.save(user);
 
-        // ---------------------------------------------------------------
-        // EMAIL HOOK — send welcome email to new user here
-
-        applicationEventPublisher.publishEvent(new UserRegisteredEvent(user.getName(), user.getEmail(), user.getRole()));
+        applicationEventPublisher.publishEvent(new UserRegisteredEvent(user.getName(), user.getEmail(), role));
 
         return userMapper.toResponse(saved);
     }

@@ -85,6 +85,28 @@ public class BeneficiaryService {
             if (score < 0) score = 0;
         }
 
+        // --- Zakat Eligibility Check (Islamic Accuracy) ---
+        // A generic local Nisab value (can be adjusted based on current gold/silver prices)
+        BigDecimal nisabThreshold = new BigDecimal("45000");
+
+        if (beneficiary.getIncome() != null && beneficiary.getIncome().compareTo(nisabThreshold) >= 0) {
+            // Income is higher than Nisab. They are only eligible if they are heavily in debt (Gharmin category).
+            if (Boolean.TRUE.equals(beneficiary.getHasDebt())) {
+                beneficiary.setEligible(true);
+                beneficiary.setRejectReason(null);
+            } else {
+                // Wealthy enough and no debt: Ineligible for Zakat
+                beneficiary.setEligible(false);
+                beneficiary.setRejectReason("Income exceeds the Nisab threshold and does not fall under the Gharmin (debt) exception.");
+                score = 0; // Strip priority score since they cannot receive funds
+            }
+        } else {
+            // Below Nisab: Eligible as Fakir/Miskin
+            beneficiary.setEligible(true);
+            beneficiary.setRejectReason(null);
+        }
+
+        // Set the final calculated score
         beneficiary.setPriorityScore(score);
     }
 
@@ -105,7 +127,7 @@ public class BeneficiaryService {
 
     @Transactional(readOnly = true)
     public List<BeneficiaryResponse> getEligibleQueue() {
-        return beneficiaryRepository.findEligibleQueue().stream()
+        return beneficiaryRepository.findByEligibleTrueOrderByPriorityScoreDesc().stream()
                 .map(beneficiaryMapper::toResponse)
                 .toList();
     }

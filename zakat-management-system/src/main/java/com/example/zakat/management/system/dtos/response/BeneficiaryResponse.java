@@ -23,6 +23,5 @@ public class BeneficiaryResponse {
     private Boolean eligible;
     private String rejectReason;
     private BigDecimal totalReceivedValue;
-    private Instant registered;
     private Instant checkedAt;
 }

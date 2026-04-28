@@ -25,16 +25,8 @@ public class ReceiptService {
     }
 
     @Transactional(readOnly = true)
-    public ReceiptResponse getReceiptById(Long id) {
-        return receiptMapper.toResponse(
-                receiptRepository.findById(id)
-                        .orElseThrow(() -> new ResourceNotFoundException("Receipt not found with id: " + id))
-        );
-    }
-
-    @Transactional(readOnly = true)
     public List<ReceiptResponse> getReceiptsByDonorId(Long donorId) {
-        return receiptRepository.findByDId(donorId).stream()
+        return receiptRepository.findAllByDonorIdDirectly(donorId).stream()
                 .map(receiptMapper::toResponse)
                 .toList();
     }

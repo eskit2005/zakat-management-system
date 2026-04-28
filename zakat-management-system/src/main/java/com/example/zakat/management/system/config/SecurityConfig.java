@@ -61,46 +61,42 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
 
-                        // Public (no login required)
+                        // 1. Public (No login required)
                         .requestMatchers(HttpMethod.POST, "/api/users/register").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/auth/login").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/auth/refresh").permitAll()
-                        // Transparency pages
-                        .requestMatchers(HttpMethod.GET, "/api/report").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/history").permitAll()
 
-                        // Admin only
-                        .requestMatchers(HttpMethod.POST, "/api/assignments").hasRole(Role.ADMIN.name())
-                        .requestMatchers(HttpMethod.GET, "/api/assignments").hasRole(Role.ADMIN.name())
-                        .requestMatchers(HttpMethod.GET, "/api/beneficiaries/queue").hasRole(Role.ADMIN.name())
-                        .requestMatchers(HttpMethod.GET, "/api/dashboard").hasRole(Role.ADMIN.name())
+                        // 2. Admin Only
+                        .requestMatchers("/api/assignments/**").hasRole(Role.ADMIN.name())
+                        .requestMatchers("/api/dashboard/**").hasRole(Role.ADMIN.name())
+                        .requestMatchers("/api/report/**").hasRole(Role.ADMIN.name())
+                        .requestMatchers(HttpMethod.DELETE, "/api/users/**").hasRole(Role.ADMIN.name())
                         .requestMatchers(HttpMethod.GET, "/api/users").hasRole(Role.ADMIN.name())
+                        .requestMatchers(HttpMethod.GET, "/api/beneficiaries").hasRole(Role.ADMIN.name())
+.requestMatchers(HttpMethod.GET, "/api/beneficiaries/queue").hasAnyRole(Role.ADMIN.name(), Role.DONOR.name())
+                        .requestMatchers(HttpMethod.GET, "/api/beneficiaries").hasRole(Role.ADMIN.name())
+                        .requestMatchers(HttpMethod.GET, "/api/beneficiaries/{id}").hasRole(Role.ADMIN.name())
                         .requestMatchers(HttpMethod.GET, "/api/receipts").hasRole(Role.ADMIN.name())
+                        .requestMatchers(HttpMethod.GET, "/api/receipts/{id}").hasRole(Role.ADMIN.name())
+                        .requestMatchers(HttpMethod.GET, "/api/receipts/donor/**").hasAnyRole(Role.ADMIN.name(), Role.DONOR.name())
 
-                        // Donor + Admin
-                        .requestMatchers(HttpMethod.POST, "/api/donations")
-                        .hasAnyRole(Role.DONOR.name(), Role.ADMIN.name())
-                        .requestMatchers(HttpMethod.GET, "/api/receipts/donation/**")
-                        .hasAnyRole(Role.DONOR.name(), Role.ADMIN.name())
-                        .requestMatchers(HttpMethod.POST, "/api/inventory")
-                        .hasAnyRole(Role.DONOR.name(), Role.ADMIN.name())
-                        .requestMatchers(HttpMethod.GET, "/api/inventory/**")
-                        .hasAnyRole(Role.DONOR.name(), Role.ADMIN.name())
+                        // 3. Donor Only (Admin cannot do these)
+                        .requestMatchers(HttpMethod.POST, "/api/donors").hasRole(Role.DONOR.name())
+                        .requestMatchers(HttpMethod.POST, "/api/inventory").hasRole(Role.DONOR.name())
 
-                        // Beneficiary + Admin
-                        .requestMatchers(HttpMethod.POST, "/api/beneficiaries")
-                        .hasAnyRole(Role.BENEFICIARY.name(), Role.ADMIN.name())
-                        .requestMatchers(HttpMethod.POST, "/api/eligibility")
-                        .hasAnyRole(Role.BENEFICIARY.name(), Role.ADMIN.name())
+                        // 4. Donor + Admin
+                        .requestMatchers(HttpMethod.GET, "/api/donors/{id}").hasAnyRole(Role.DONOR.name(), Role.ADMIN.name())
+                        .requestMatchers(HttpMethod.POST, "/api/donors/{id}/beneficiaries").hasAnyRole(Role.DONOR.name(), Role.ADMIN.name())
+                        .requestMatchers(HttpMethod.GET, "/api/donors/{id}/beneficiaries").hasAnyRole(Role.DONOR.name(), Role.ADMIN.name())
 
-                        // Direct donation to beneficiary
-                        .requestMatchers(HttpMethod.POST, "/api/beneficiaries/*/donate")
-                        .hasAnyRole(Role.DONOR.name(), Role.ADMIN.name())
+                        // 5. Beneficiary Only
+                        .requestMatchers(HttpMethod.PATCH, "/api/beneficiaries/form").hasRole(Role.BENEFICIARY.name())
 
-                        // Any authenticated user
+                        // 6. Auth - Any Authenticated User
                         .requestMatchers(HttpMethod.GET, "/api/auth/me").authenticated()
                         .requestMatchers(HttpMethod.DELETE, "/api/auth/logout").authenticated()
 
+                        // 7. Any other request needs authentication
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
@@ -115,8 +111,8 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(List.of("http://localhost:5173"));
-        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        config.setAllowedOrigins(List.of("http://localhost:5173")); // Vite default port
+        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
         config.setAllowedHeaders(List.of("*"));
         config.setAllowCredentials(true);
 

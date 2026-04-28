@@ -6,8 +6,6 @@ import java.time.Instant;
 
 @Data
 public class ZakatAssignmentResponse {
-    private Long id;
     private BigDecimal amountAssigned;
-    private Long invenId;
     private Instant assignedAt;
 }

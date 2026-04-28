@@ -4,11 +4,13 @@ import com.example.zakat.management.system.dtos.request.DirectDonationRequest;
 import com.example.zakat.management.system.entities.Beneficiary;
 import com.example.zakat.management.system.entities.BeneficiaryDonor;
 import com.example.zakat.management.system.entities.BeneficiaryDonorId;
+import com.example.zakat.management.system.entities.Donor;
 import com.example.zakat.management.system.entities.User;
 import com.example.zakat.management.system.events.ZakatAssignedEvent;
 import com.example.zakat.management.system.exceptions.ResourceNotFoundException;
 import com.example.zakat.management.system.repositories.BeneficiaryDonorRepository;
 import com.example.zakat.management.system.repositories.BeneficiaryRepository;
+import com.example.zakat.management.system.repositories.DonorRepository;
 import com.example.zakat.management.system.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
@@ -26,17 +28,23 @@ public class DirectDonationService {
     private final BeneficiaryRepository beneficiaryRepository;
     private final BeneficiaryService beneficiaryService;
     private final UserRepository userRepository;
+    private final DonorRepository donorRepository;
     private final ApplicationEventPublisher applicationEventPublisher;
 
     @Transactional
-    public void donateToBeneficiary(DirectDonationRequest request) {
+    public void donateToBeneficiary(DirectDonationRequest request, Long donorId) {
         Beneficiary beneficiary = beneficiaryRepository.findById(request.getBeneficiaryId())
                 .orElseThrow(() -> new ResourceNotFoundException("Beneficiary not found with id: " + request.getBeneficiaryId()));
 
+        Donor donor = donorRepository.findById(donorId)
+                .orElseThrow(() -> new ResourceNotFoundException("Donor not found with id: " + donorId));
+
         BeneficiaryDonor beneficiaryDonor = new BeneficiaryDonor();
-        beneficiaryDonor.getId().setDId(request.getDonorId());
+        beneficiaryDonor.getId().setDId(donorId);
         beneficiaryDonor.getId().setBId(request.getBeneficiaryId());
         beneficiaryDonor.setAmount(request.getAmount());
+        beneficiaryDonor.setDonor(donor);
+        beneficiaryDonor.setBeneficiary(beneficiary);
 
         beneficiaryDonorRepository.save(beneficiaryDonor);
 
@@ -59,7 +67,7 @@ public class DirectDonationService {
 
     @Transactional(readOnly = true)
     public List<Long> getBeneficiariesDonatedTo(Long donorId) {
-        return beneficiaryDonorRepository.findByDId(donorId).stream()
+        return beneficiaryDonorRepository.findByIdDId(donorId).stream()
                 .map(bd -> bd.getId().getBId())
                 .toList();
     }

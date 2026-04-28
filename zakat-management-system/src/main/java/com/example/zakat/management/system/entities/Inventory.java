@@ -3,6 +3,8 @@ package com.example.zakat.management.system.entities;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
+
 import java.math.BigDecimal;
 import java.time.Instant;
 
@@ -26,10 +28,11 @@ public class Inventory {
     @Column(name = "status")
     private String status;
 
-    @Column(name = "received_at", insertable = false, updatable = false)
+
+    @Column(name = "received_at")
     private Instant receivedAt;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "d_id", insertable = false, updatable = false)
+    @JoinColumn(name = "d_id")
     private Donor donor;
 }

@@ -16,9 +16,6 @@ import java.time.Instant;
 @DiscriminatorValue("BENEFICIARY")
 public class Beneficiary extends User {
 
-    @Column(name = "registered", insertable = false, updatable = false)
-    private Instant registered;
-
     @Column(name = "reason", columnDefinition = "TEXT")
     private String reason;
 
@@ -58,7 +55,7 @@ public class Beneficiary extends User {
     @Column(name = "reject_reason", columnDefinition = "TEXT")
     private String rejectReason;
 
-    @Column(name = "checked_at", insertable = false, updatable = false)
+    @Column(name = "checked_at")
     private Instant checkedAt;
 
     @Column(name = "total_received_value", precision = 12, scale = 2)

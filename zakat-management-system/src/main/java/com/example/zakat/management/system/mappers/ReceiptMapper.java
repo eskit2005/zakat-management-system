@@ -8,6 +8,8 @@ import org.mapstruct.Mapping;
 @Mapper(componentModel = "spring")
 public interface ReceiptMapper {
 
-    @Mapping(source = "recepNum", target = "receiptNumber")
+    @Mapping(source = "receiptId.id", target = "id")
+    @Mapping(source = "receiptId.DId", target = "donorId")
+    @Mapping(target = "donorName", expression = "java(receipt.getDonor().getName())")
     ReceiptResponse toResponse(Receipt receipt);
 }

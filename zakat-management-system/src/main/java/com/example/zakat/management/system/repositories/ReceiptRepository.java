@@ -13,18 +13,18 @@ import java.util.Optional;
 @Repository
 public interface ReceiptRepository extends JpaRepository<Receipt, ReceiptId> {
 
-    @Query(value = "SELECT * FROM receipt WHERE id = :id", nativeQuery = true)
-    Optional<Receipt> findById(@Param("id") Long id);
+    // @Query(value = "SELECT * FROM receipt WHERE id = :id", nativeQuery = true)
+    // Optional<Receipt> findById(@Param("id") Long id);
 
-    @Query(value = "SELECT * FROM receipt", nativeQuery = true)
-    List<Receipt> findAll();
+    // @Query(value = "SELECT * FROM receipt", nativeQuery = true)
+    // List<Receipt> findAll();
 
-    @Query(value = "SELECT * FROM receipt WHERE d_id = :dId", nativeQuery = true)
-    List<Receipt> findByDId(@Param("dId") Long dId);
+    @Query(value = "SELECT * FROM receipt WHERE d_id = :donorId", nativeQuery = true)
+    List<Receipt> findAllByDonorIdDirectly(@Param("donorId") Long donorId);
+    // @Query(value = "SELECT * FROM receipt WHERE recep_num = :recepNum", nativeQuery = true)
+    // Optional<Receipt> findByRecepNum(@Param("recepNum") String recepNum);
+    Optional<Receipt> findByRecepNum(String recepNum);
 
-    @Query(value = "SELECT * FROM receipt WHERE recep_num = :recepNum", nativeQuery = true)
-    Optional<Receipt> findByRecepNum(@Param("recepNum") String recepNum);
-
-    @Query(value = "SELECT COALESCE(SUM(amount), 0) FROM receipt", nativeQuery = true)
+    @Query("SELECT COALESCE(SUM(r.amount), 0) FROM Receipt r")
     Double sumAllAmounts();
 }

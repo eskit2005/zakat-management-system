@@ -3,12 +3,14 @@ package com.example.zakat.management.system.entities;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
+
 import java.time.Instant;
 
 @Getter
 @Setter
 @Entity
-@Table(name = "user")
+@Table(name = "users")
 @Inheritance(strategy = InheritanceType.JOINED)
 @DiscriminatorColumn(name = "role")
 public class User {
@@ -30,6 +32,7 @@ public class User {
     @Column(name = "role", nullable = false, insertable = false, updatable = false)
     private String role;
 
+    @CreationTimestamp
     @Column(name = "created_at", insertable = false, updatable = false)
     private Instant createdAt;
 }

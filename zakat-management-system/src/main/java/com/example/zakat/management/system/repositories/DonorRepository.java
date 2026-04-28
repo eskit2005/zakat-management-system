@@ -11,6 +11,6 @@ import java.util.Optional;
 @Repository
 public interface DonorRepository extends JpaRepository<Donor, Long> {
 
-    @Query(value = "SELECT * FROM donor WHERE id = :id", nativeQuery = true)
+    @Query(value = "SELECT * FROM users WHERE id = :id AND role = 'DONOR'", nativeQuery = true)
     Optional<Donor> findById(@Param("id") Long id);
 }

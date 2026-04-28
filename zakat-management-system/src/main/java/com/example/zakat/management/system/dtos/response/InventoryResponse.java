@@ -11,5 +11,5 @@ public class InventoryResponse {
     private BigDecimal appoxValue;
     private String status;
     private Instant receivedAt;
-    private Long dId;
+    private Long donorId;
 }

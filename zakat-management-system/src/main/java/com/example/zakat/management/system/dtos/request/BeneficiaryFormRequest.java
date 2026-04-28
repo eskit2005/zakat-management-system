@@ -1,7 +1,7 @@
 package com.example.zakat.management.system.dtos.request;
 
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.PositiveOrZero;
 import lombok.Data;
 import java.math.BigDecimal;
 
@@ -13,17 +13,17 @@ public class BeneficiaryFormRequest {
 
     private String reason;
 
-    @Positive
+    @PositiveOrZero
     private Integer dependents;
 
-    @Positive
+    @PositiveOrZero
     private BigDecimal income;
 
     private Boolean emergency;
 
     private Boolean disability;
 
-    @Positive
+    @PositiveOrZero
     private Integer age;
 
     private Boolean isOrphan;

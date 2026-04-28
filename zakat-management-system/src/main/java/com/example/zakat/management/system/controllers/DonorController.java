@@ -30,8 +30,7 @@ public class DonorController {
     public ResponseEntity<Void> donateToBeneficiary(
             @PathVariable Long id,
             @Valid @RequestBody DirectDonationRequest request) {
-        request.setDonorId(id);
-        directDonationService.donateToBeneficiary(request);
+        directDonationService.donateToBeneficiary(request, id);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 

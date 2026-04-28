@@ -7,8 +7,8 @@ import java.math.BigDecimal;
 
 @Data
 public class DirectDonationRequest {
-    @NotNull(message = "Donor ID is required")
-    private Long donorId;
+    // @NotNull(message = "Donor ID is required")
+    // private Long donorId;
 
     @NotNull(message = "Beneficiary ID is required")
     private Long beneficiaryId;

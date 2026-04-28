@@ -6,7 +6,7 @@ import java.time.Instant;
 
 @Data
 public class DonationResponse {
-    private Long id;
+    private Long receiptId;
     private String recepNum;
     private String donorName;
     private BigDecimal amount;

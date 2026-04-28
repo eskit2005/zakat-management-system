@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Instant;
 import java.util.List;
 
 @Service
@@ -29,9 +30,11 @@ public class InventoryService {
         inventory.setName(request.getName());
         inventory.setAppoxValue(request.getApproxValue());
         inventory.setStatus("AVAILABLE");
+        inventory.setReceivedAt(Instant.now());
         Donor donor = donorRepository.findById(request.getDonorId())
                 .orElseThrow(() -> new ResourceNotFoundException("Donor not found with id: " + request.getDonorId()));
         inventory.setDonor(donor);
+
 
         return inventoryMapper.toResponse(inventoryRepository.save(inventory));
     }

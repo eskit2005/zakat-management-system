@@ -2,21 +2,22 @@ package com.example.zakat.management.system.services;
 
 import com.example.zakat.management.system.dtos.request.ZakatAssignmentRequest;
 import com.example.zakat.management.system.dtos.response.ZakatAssignmentResponse;
+import com.example.zakat.management.system.entities.Admin;
 import com.example.zakat.management.system.entities.Beneficiary;
 import com.example.zakat.management.system.entities.BeneficiaryAdminZakat;
-import com.example.zakat.management.system.entities.BeneficiaryAdminZakatId;
-import com.example.zakat.management.system.entities.BeneficiaryDonor;
 import com.example.zakat.management.system.entities.Inventory;
+import com.example.zakat.management.system.entities.Receipt;
 import com.example.zakat.management.system.entities.ZakatAssignment;
 import com.example.zakat.management.system.events.ZakatAssignedEvent;
 import com.example.zakat.management.system.exceptions.IneligibleBeneficiaryException;
 import com.example.zakat.management.system.exceptions.InsufficientFundsException;
 import com.example.zakat.management.system.exceptions.ResourceNotFoundException;
 import com.example.zakat.management.system.mappers.ZakatAssignmentMapper;
+import com.example.zakat.management.system.repositories.AdminRepository;
 import com.example.zakat.management.system.repositories.BeneficiaryAdminZakatRepository;
-import com.example.zakat.management.system.repositories.BeneficiaryDonorRepository;
 import com.example.zakat.management.system.repositories.BeneficiaryRepository;
 import com.example.zakat.management.system.repositories.InventoryRepository;
+import com.example.zakat.management.system.repositories.ReceiptRepository;
 import com.example.zakat.management.system.repositories.UserRepository;
 import com.example.zakat.management.system.repositories.ZakatAssignmentRepository;
 import lombok.RequiredArgsConstructor;
@@ -35,10 +36,11 @@ public class ZakatAssignmentService {
     private final ApplicationEventPublisher applicationEventPublisher;
     private final ZakatAssignmentRepository zakatAssignmentRepository;
     private final BeneficiaryRepository beneficiaryRepository;
-    private final BeneficiaryDonorRepository beneficiaryDonorRepository;
+    private final ReceiptRepository receiptRepository;
     private final BeneficiaryAdminZakatRepository beneficiaryAdminZakatRepository;
     private final InventoryRepository inventoryRepository;
     private final UserRepository userRepository;
+    private final AdminRepository adminRepository; // 1. INJECTED ADMIN REPOSITORY
     private final ZakatAssignmentMapper zakatAssignmentMapper;
     private final BeneficiaryService beneficiaryService;
 
@@ -76,9 +78,9 @@ public class ZakatAssignmentService {
             inventory.setStatus("ASSIGNED");
             inventoryRepository.save(inventory);
         } else {
-            List<BeneficiaryDonor> allDonations = beneficiaryDonorRepository.findAll();
-            BigDecimal totalDonated = allDonations.stream()
-                    .map(BeneficiaryDonor::getAmount)
+            List<Receipt> allReceipts = receiptRepository.findAll();
+            BigDecimal totalDonated = allReceipts.stream()
+                    .map(Receipt::getAmount)
                     .reduce(BigDecimal.ZERO, BigDecimal::add);
 
             BigDecimal totalAssigned = zakatAssignmentRepository.findAll().stream()
@@ -105,10 +107,15 @@ public class ZakatAssignmentService {
         beneficiaryService.recalculatePriorityScore(beneficiary);
         beneficiaryRepository.save(beneficiary);
 
+        Admin admin = adminRepository.findById(request.getAdminId())
+                .orElseThrow(() -> new ResourceNotFoundException("Admin not found with id: " + request.getAdminId()));
+
         BeneficiaryAdminZakat baz = new BeneficiaryAdminZakat();
-        baz.getId().setZId(saved.getId());
-        baz.getId().setBId(beneficiary.getId());
-        baz.getId().setAId(request.getAdminId());
+
+        baz.setAssignment(saved);
+        baz.setBeneficiary(beneficiary);
+        baz.setAdmin(admin);
+
         beneficiaryAdminZakatRepository.save(baz);
 
         var user = userRepository.findById(beneficiary.getId()).orElse(null);

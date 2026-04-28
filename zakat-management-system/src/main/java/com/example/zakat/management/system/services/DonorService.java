@@ -7,7 +7,6 @@ import com.example.zakat.management.system.entities.Donor;
 import com.example.zakat.management.system.entities.Receipt;
 import com.example.zakat.management.system.exceptions.ResourceNotFoundException;
 import com.example.zakat.management.system.mappers.DonorMapper;
-import com.example.zakat.management.system.mappers.ReceiptMapper;
 import com.example.zakat.management.system.repositories.DonorRepository;
 import com.example.zakat.management.system.repositories.ReceiptRepository;
 import lombok.RequiredArgsConstructor;
@@ -32,18 +31,22 @@ public class DonorService {
                 .orElseThrow(() -> new ResourceNotFoundException("Donor not found with id: " + request.getDonorId()));
 
         Receipt receipt = new Receipt();
-        receipt.getReceiptId().setDId(request.getDonorId());
         receipt.setRecepNum(generateRecepNum());
         receipt.setAmount(request.getAmount());
+        receipt.setDonor(donor);
 
         Receipt saved = receiptRepository.save(receipt);
 
+        // Fetch fresh to get auto-generated ID and DB-set timestamp
+        Receipt fresh = receiptRepository.findByRecepNum(saved.getRecepNum())
+                .orElse(saved);
+
         DonationResponse response = new DonationResponse();
-        response.setId(saved.getReceiptId().getId());
-        response.setRecepNum(saved.getRecepNum());
+        response.setReceiptId(fresh.getReceiptId().getId());
+        response.setRecepNum(fresh.getRecepNum());
         response.setDonorName(donor.getName());
-        response.setAmount(saved.getAmount());
-        response.setIssuedAt(saved.getIssuedAt());
+        response.setAmount(fresh.getAmount());
+        response.setIssuedAt(fresh.getIssuedAt());
 
         return response;
     }
