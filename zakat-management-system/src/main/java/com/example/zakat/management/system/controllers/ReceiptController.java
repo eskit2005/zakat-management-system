@@ -20,12 +20,7 @@ public class ReceiptController {
         return ResponseEntity.ok(receiptService.getAllReceipts());
     }
 
-//    @GetMapping("/{id}")
-//    public ResponseEntity<ReceiptResponse> getReceiptById(@PathVariable Long id) {
-//        return ResponseEntity.ok(receiptService.getReceiptById(id));
-//    }
-
-    @GetMapping("/donor/{donorId}")
+@GetMapping("/donor/{donorId}")
     public ResponseEntity<List<ReceiptResponse>> getReceiptsByDonorId(@PathVariable Long donorId) {
         return ResponseEntity.ok(receiptService.getReceiptsByDonorId(donorId));
     }

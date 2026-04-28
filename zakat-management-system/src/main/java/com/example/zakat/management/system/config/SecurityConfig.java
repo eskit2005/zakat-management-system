@@ -65,11 +65,11 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/api/users/register").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/auth/login").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/auth/refresh").permitAll()
+                        .requestMatchers("/api/report/**").permitAll()
 
                         // 2. Admin Only
                         .requestMatchers("/api/assignments/**").hasRole(Role.ADMIN.name())
                         .requestMatchers("/api/dashboard/**").hasRole(Role.ADMIN.name())
-                        .requestMatchers("/api/report/**").hasRole(Role.ADMIN.name())
                         .requestMatchers(HttpMethod.DELETE, "/api/users/**").hasRole(Role.ADMIN.name())
                         .requestMatchers(HttpMethod.GET, "/api/users").hasRole(Role.ADMIN.name())
                         .requestMatchers(HttpMethod.GET, "/api/beneficiaries").hasRole(Role.ADMIN.name())
@@ -77,7 +77,6 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/beneficiaries").hasRole(Role.ADMIN.name())
                         .requestMatchers(HttpMethod.GET, "/api/beneficiaries/{id}").hasRole(Role.ADMIN.name())
                         .requestMatchers(HttpMethod.GET, "/api/receipts").hasRole(Role.ADMIN.name())
-                        .requestMatchers(HttpMethod.GET, "/api/receipts/{id}").hasRole(Role.ADMIN.name())
                         .requestMatchers(HttpMethod.GET, "/api/receipts/donor/**").hasAnyRole(Role.ADMIN.name(), Role.DONOR.name())
 
                         // 3. Donor Only (Admin cannot do these)

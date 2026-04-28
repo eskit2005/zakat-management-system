@@ -14,6 +14,46 @@
 
 ---
 
+## Endpoints Quick Reference
+
+| # | Method | Endpoint | Purpose | Access |
+|---|--------|----------|---------|--------|
+| | | **Authentication** | | |
+| 1 | POST | /api/users/register | Register new user (DONOR, ADMIN, BENEFICIARY) | Public |
+| 2 | POST | /api/auth/login | Login to get JWT token | Public |
+| 3 | GET | /api/auth/refresh | Refresh access token | Public |
+| 4 | GET | /api/auth/me | Get current logged-in user info | Authenticated |
+| 5 | DELETE | /api/auth/logout | Logout and revoke refresh token | Authenticated |
+| | | **User Management** | | |
+| 6 | GET | /api/users | Get all registered users | ADMIN |
+| 7 | DELETE | /api/users/{id} | Delete a user by ID | ADMIN |
+| | | **Donor** | | |
+| 8 | POST | /api/donors | Donor donates money to org (creates receipt) | DONOR |
+| 9 | GET | /api/donors/{id} | Get donor details by ID | DONOR, ADMIN |
+| 10 | POST | /api/donors/{id}/beneficiaries | Direct donation to beneficiary | DONOR, ADMIN |
+| 11 | GET | /api/donors/{id}/beneficiaries | Get beneficiaries donor donated to | DONOR, ADMIN |
+| | | **Beneficiary** | | |
+| 12 | PATCH | /api/beneficiaries/form | Beneficiary submits application form | BENEFICIARY |
+| 13 | GET | /api/beneficiaries | Get all beneficiaries | ADMIN |
+| 14 | GET | /api/beneficiaries/{id} | Get specific beneficiary by ID | ADMIN |
+| 15 | GET | /api/beneficiaries/queue | Get eligible beneficiaries by priority | ADMIN, DONOR |
+| | | **Zakat Assignment** | | |
+| 16 | POST | /api/assignments | Admin assigns money/inventory to beneficiary | ADMIN |
+| 17 | GET | /api/assignments | Get all zucchini assignments | ADMIN |
+| | | **Inventory** | | |
+| 18 | POST | /api/inventory | Donor donates inventory item | DONOR |
+| 19 | GET | /api/inventory | Get all inventory items | ADMIN |
+| 20 | GET | /api/inventory/{id} | Get specific inventory item | ADMIN |
+| 21 | GET | /api/inventory/available | Get available inventory items | ADMIN |
+| | | **Receipt** | | |
+| 22 | GET | /api/receipts | Get all receipts | ADMIN |
+| 23 | GET | /api/receipts/donor/{donorId} | Get all receipts for a donor | ADMIN, DONOR |
+| | | **Dashboard** | | |
+| 24 | GET | /api/dashboard | Get dashboard summary | ADMIN |
+| 25 | GET | /api/report | Get comprehensive system report | Public |
+
+---
+
 ## 1. Authentication
 
 ### POST /api/users/register
@@ -337,7 +377,7 @@
 
 ---
 
-## 7. Report & Dashboard Endpoints
+## 7. Dashboard & Report Endpoints
 
 ### GET /api/dashboard
 **Purpose:** Get dashboard summary (requires auth as admin)
@@ -356,7 +396,7 @@
 ---
 
 ### GET /api/report
-**Purpose:** Get comprehensive report (requires auth as admin)
+**Purpose:** Get comprehensive report (public - no authentication required)
 
 **Response (200):**
 ```json
@@ -383,11 +423,6 @@
   { "id": 1, "recepNum": "ZKT-2604-K9R3P", "amount": 5000.00, "DId": 1, "issuedAt": "2026-04-28T10:05:00Z" }
 ]
 ```
-
----
-
-### GET /api/receipts/{id}
-**Purpose:** Get specific receipt
 
 ---
 
@@ -649,132 +684,18 @@ GET http://localhost:8080/api/receipts
 Authorization: Bearer $ADMIN_TOKEN
 ```
 
-### Step 23: Get Receipt by ID
-
-```
-GET http://localhost:8080/api/receipts/1
-Authorization: Bearer $ADMIN_TOKEN
-```
-
-### Step 24: Get Receipts by Donor ID
+### Step 23: Get Receipts by Donor ID
 
 ```
 GET http://localhost:8080/api/receipts/donor/1
 Authorization: Bearer $ADMIN_TOKEN
 ```
 
-### Step 25: Logout
+### Step 24: Logout
 
 ```
 DELETE http://localhost:8080/api/auth/logout
 ```
-
-### Step 2: Login (Get Access Token)
-
-```bash
-# Login as Donor - save the token
-curl -X POST http://localhost:8080/api/auth/login \
-  -H "Content-Type: application/json" \
-  -d '{
-    "email": "john@donor.com",
-    "password": "pass123"
-  }'
-# Returns: {"accessToken": "eyJhbGciOiJIUzI1NiJ9..."}
-# Save this as $DONOR_TOKEN
-
-# Login as Admin - save the token
-curl -X POST http://localhost:8080/api/auth/login \
-  -H "Content-Type: application/json" \
-  -d '{
-    "email": "admin@zakat.com",
-    "password": "admin123"
-  }'
-# Returns: {"accessToken": "eyJhbGciOiJIUzI1NiJ9..."}
-# Save this as $ADMIN_TOKEN
-
-# Login as Beneficiary - save the token
-curl -X POST http://localhost:8080/api/auth/login \
-  -H "Content-Type: application/json" \
-  -d '{
-    "email": "jane@beneficiary.com",
-    "password": "pass123"
-  }'
-# Returns: {"accessToken": "eyJhbGciOiJIUzI1NiJ9..."}
-# Save this as $BENEFICIARY_TOKEN
-```
-
-### Step 4: Donor Makes Org Donation
-
-```bash
-curl -X POST http://localhost:8080/api/donors \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer $DONOR_TOKEN" \
-  -d '{
-    "donorId": 1,
-    "amount": 5000.00
-  }'
-```
-
-### Step 5: Beneficiary Submits Form
-
-```bash
-curl -X PATCH http://localhost:8080/api/beneficiaries/form \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer $BENEFICIARY_TOKEN" \
-  -d '{
-    "beneficiaryId": 3,
-    "reason": "Lost my job and need help",
-    "dependents": 2,
-    "income": 0,
-    "emergency": false,
-    "disability": false,
-    "age": 35,
-    "isOrphan": false,
-    "hasDebt": true,
-    "unemployed": true,
-    "illness": false
-  }'
-```
-
-### Step 8: Admin Assigns Zakat
-
-```bash
-curl -X POST http://localhost:8080/api/assignments \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer $ADMIN_TOKEN" \
-  -d '{
-    "beneficiaryId": 3,
-    "adminId": 2,
-    "amountAssigned": 1000.00
-  }'
-```
-
-### Step 9: Direct Donation (Donor → Beneficiary)
-
-```bash
-curl -X POST http://localhost:8080/api/donors/1/beneficiaries \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer $DONOR_TOKEN" \
-  -d '{
-    "beneficiaryId": 3,
-    "amount": 500.00
-  }'
-```
-
-### Step 12: Add Inventory
-
-```bash
-curl -X POST http://localhost:8080/api/inventory \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer $DONOR_TOKEN" \
-  -d '{
-    "donorId": 1,
-    "name": "Used Laptop",
-    "approxValue": 25000.00
-  }'
-```
-
----
 
 *Document Version: 1.0*
 *Last Updated: April 28, 2026*
