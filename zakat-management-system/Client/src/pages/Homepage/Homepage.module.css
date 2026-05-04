@@ -1,0 +1,325 @@
+.page {
+  display: flex;
+  flex-direction: column;
+}
+
+.hero {
+  position: relative;
+  min-height: 85vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 4rem 2rem;
+  overflow: hidden;
+}
+
+.heroGlow {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 50% -20%, rgba(16, 185, 129, 0.15) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.heroContent {
+  position: relative;
+  z-index: 1;
+  max-width: 1300px;
+}
+
+.heroBadge {
+  display: inline-block;
+  padding: 0.5rem 1.25rem;
+  background: rgba(16, 185, 129, 0.1);
+  border: 1px solid rgba(16, 185, 129, 0.2);
+  border-radius: 99px;
+  color: var(--primary);
+  font-size: 0.875rem;
+  font-weight: 600;
+  margin-bottom: 2rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.heroTitle {
+  font-size: clamp(3rem, 9vw, 5.5rem);
+  font-weight: 800;
+  line-height: 1.05;
+  letter-spacing: -0.05em;
+  margin-bottom: 2rem;
+  color: var(--text);
+}
+
+.heroGreen {
+  color: var(--primary);
+}
+
+.heroSub {
+  font-size: 1.35rem;
+  color: var(--text-muted);
+  max-width: 1000px;
+  margin: 0 auto 4rem;
+  line-height: 1.7;
+}
+
+.heroActions {
+  display: flex;
+  gap: 1.25rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.primaryBtn {
+  padding: 1rem 2.5rem;
+  background: var(--primary);
+  color: #000;
+  border-radius: 100px;
+  font-weight: 700;
+  font-size: 1rem;
+  transition: all 0.2s ease;
+  box-shadow: 0 10px 20px -5px rgba(16, 185, 129, 0.3);
+}
+
+.primaryBtn:hover {
+  background: var(--primary-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 15px 25px -5px rgba(16, 185, 129, 0.4);
+}
+
+.outlineBtn {
+  padding: 1rem 2.5rem;
+  background: transparent;
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 100px;
+  font-weight: 700;
+  font-size: 1rem;
+  transition: all 0.2s ease;
+}
+
+.outlineBtn:hover {
+  background: var(--bg-tertiary);
+  border-color: var(--text-muted);
+}
+
+.section {
+  padding: 8rem 0;
+}
+
+.sectionHeader {
+  text-align: center;
+  margin-bottom: 4rem;
+}
+
+.sectionHeaderSub {
+  color: var(--text-muted);
+}
+
+.sectionHeader h2 {
+  font-size: 2.5rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  margin-bottom: 1rem;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: 4rem;
+}
+
+.card {
+  background: var(--bg-secondary);
+  padding: 4rem 3rem;
+  border-radius: 32px;
+  border: 1px solid var(--border);
+  text-align: center;
+  transition: all 0.3s ease;
+}
+
+.card:hover {
+  border-color: var(--primary);
+  transform: translateY(-8px);
+  background: var(--bg-tertiary);
+}
+
+.iconWrapper {
+  width: 64px;
+  height: 64px;
+  background: var(--primary-light);
+  color: var(--primary);
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 2rem;
+}
+
+.card h3 {
+  font-size: 1.75rem;
+  margin-bottom: 1rem;
+}
+
+.card p {
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+
+.reportSection {
+  background: var(--bg-secondary);
+  border-radius: 48px;
+  padding: 6rem 4rem;
+  border: 1px solid var(--border);
+  margin: 4rem 0;
+  box-shadow: inset 0 0 80px rgba(0,0,0,0.2);
+  width: 100%;
+  overflow: hidden;
+}
+
+.reportHeader {
+  text-align: center;
+  margin-bottom: 4rem;
+}
+
+.reportHeaderSub {
+  color: var(--text-muted);
+  font-size: 1.15rem;
+  margin-top: 1rem;
+}
+
+.reportGridFin {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 2rem;
+  margin-bottom: 3rem;
+}
+
+.reportGridImpact {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 2rem;
+  border-top: 1px solid var(--border);
+  padding-top: 4rem;
+}
+
+.reportItem {
+  text-align: center;
+  padding: 2.5rem 1.5rem; /* Tighter padding to fit horizontally */
+  background: var(--bg-tertiary);
+  border-radius: 24px;
+  border: 1px solid var(--border);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.reportItem:hover {
+  transform: translateY(-5px);
+  border-color: var(--primary);
+}
+
+.reportVal {
+  font-size: clamp(2.5rem, 6vw, 4.5rem); /* Scaled up for more impact */
+  font-weight: 800;
+  color: var(--primary);
+  letter-spacing: -0.05em;
+  margin-bottom: 0.75rem;
+  line-height: 1;
+}
+
+.reportValImpact {
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  color: var(--text);
+  font-weight: 800;
+  letter-spacing: -0.05em;
+  margin-bottom: 0.75rem;
+  line-height: 1;
+}
+
+.reportLabel {
+  color: var(--text-muted);
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.875rem;
+  letter-spacing: 0.05em;
+}
+
+.iconImpactDonors {
+  margin: 0 auto 1.5rem;
+  background: rgba(99, 102, 241, 0.1);
+  color: #6366f1;
+}
+
+.iconImpactBeneficiaries {
+  margin: 0 auto 1.5rem;
+  background: rgba(16, 185, 129, 0.1);
+  color: var(--primary);
+}
+
+.iconImpactAssignments {
+  margin: 0 auto 1.5rem;
+  background: rgba(245, 158, 11, 0.1);
+  color: #f59e0b;
+}
+
+.ctaCard {
+  background: linear-gradient(135deg, var(--bg-tertiary) 0%, var(--bg-secondary) 100%);
+  padding: 5rem;
+  border-radius: 32px;
+  border: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4rem;
+  overflow: hidden;
+  position: relative;
+}
+
+.ctaContent {
+  position: relative;
+  z-index: 2;
+  flex: 1;
+}
+
+.ctaContent h2 {
+  font-size: 3rem;
+  font-weight: 800;
+  margin-bottom: 1.5rem;
+  letter-spacing: -0.03em;
+}
+
+.ctaContent p {
+  font-size: 1.25rem;
+  color: var(--text-muted);
+  margin-bottom: 4rem;
+  max-width: 900px;
+}
+
+.ctaIcon {
+  opacity: 0.1;
+  flex-shrink: 0;
+}
+
+@media (max-width: 1024px) {
+  .reportSection {
+    padding: 4rem 2rem;
+  }
+  .ctaCard {
+    flex-direction: column;
+    text-align: center;
+    padding: 4rem 2rem;
+  }
+  .ctaContent p {
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+
+@media (max-width: 768px) {
+  .reportGridFin, .reportGridImpact {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+}

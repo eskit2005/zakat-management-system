@@ -1,0 +1,234 @@
+.container {
+  padding: 6rem 2rem;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 4rem;
+}
+
+.header h2 {
+  font-size: 3rem;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+}
+
+.header p {
+  color: var(--text-muted);
+  font-size: 1.125rem;
+  margin-top: 1rem;
+}
+
+.card {
+  background: var(--bg-secondary);
+  padding: 4rem;
+  border-radius: 40px;
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-lg);
+  animation: fadeIn 0.5s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.formGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 2rem;
+  margin-bottom: 3rem;
+}
+
+.checkboxGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem;
+  margin-bottom: 3rem;
+}
+
+@media (max-width: 600px) {
+  .checkboxGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.formGroup {
+  margin-bottom: 2rem;
+}
+
+.formGroup label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.input, .select, .textarea {
+  width: 100%;
+  padding: 1.125rem 1.25rem;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  font-size: 1rem;
+  color: var(--text);
+  transition: all 0.2s ease;
+}
+
+.input:focus, .select:focus, .textarea:focus {
+  outline: none;
+  border-color: var(--primary);
+  background: rgba(16, 185, 129, 0.03);
+}
+
+.checkboxGroup {
+  background: rgba(16, 185, 129, 0.05);
+  padding: 1.25rem;
+  border-radius: 16px;
+  border: 1px solid rgba(16, 185, 129, 0.1);
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.checkboxGroup:hover {
+  background: rgba(16, 185, 129, 0.08);
+  border-color: var(--primary);
+}
+
+.checkboxGroup input {
+  width: 20px;
+  height: 20px;
+  accent-color: var(--primary);
+  cursor: pointer;
+}
+
+.checkboxGroup label {
+  font-weight: 600;
+  color: var(--primary);
+  cursor: pointer;
+  margin: 0;
+  font-size: 0.9375rem;
+}
+
+.submitBtn {
+  width: 100%;
+  background: var(--primary);
+  color: #000;
+  padding: 1.25rem;
+  border-radius: 16px;
+  font-weight: 800;
+  font-size: 1.125rem;
+  transition: all 0.2s ease;
+}
+
+.submitBtn:hover {
+  background: var(--primary-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px -5px rgba(16, 185, 129, 0.4);
+}
+
+.successCard {
+  text-align: center;
+  padding: 2rem 0;
+}
+
+.successTitle {
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--primary);
+  margin-bottom: 1rem;
+}
+
+.successMsg {
+  margin-bottom: 2.5rem;
+  font-size: 1.125rem;
+  color: var(--text-muted);
+}
+
+.updateBtn {
+  background: transparent;
+  border: 2px solid var(--border);
+  color: var(--text);
+  padding: 1rem 2rem;
+  border-radius: 100px;
+  font-weight: 700;
+}
+
+.updateBtn:hover {
+  border-color: var(--text-muted);
+  background: var(--bg-tertiary);
+}
+
+.simplePrompt {
+  text-align: center;
+  padding: 4rem;
+  background: var(--bg-secondary);
+  border-radius: 16px;
+  border: 1px solid var(--border);
+  margin-top: 4rem;
+}
+
+.simplePrompt h2 {
+  color: var(--error);
+  font-size: 2rem;
+  margin-bottom: 1rem;
+}
+
+.simpleLink {
+  display: inline-block;
+  margin-top: 2rem;
+  color: var(--primary);
+  font-weight: 700;
+  text-decoration: underline;
+}
+
+.updateNotice {
+  background: rgba(16, 185, 129, 0.1);
+  border: 1px solid var(--primary);
+  padding: 1.5rem;
+  border-radius: 16px;
+  margin-bottom: 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+
+.updateNotice p {
+  color: var(--text);
+  margin: 0;
+  font-size: 0.9375rem;
+  line-height: 1.5;
+}
+
+.dismissBtn {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.dismissBtn:hover {
+  background: var(--bg-tertiary);
+  color: var(--text);
+}
+
+.formNarrow {
+  max-width: 600px;
+  margin: 0 auto;
+}
