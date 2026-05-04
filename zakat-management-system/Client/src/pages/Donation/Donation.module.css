@@ -1,0 +1,286 @@
+.container {
+  padding: 4rem 2rem;
+  max-width: 1536px;
+  margin: 0 auto;
+  min-height: calc(100vh - 80px - 200px);
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 4rem;
+}
+
+.header h2 {
+  font-size: 3rem;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  margin-bottom: 1rem;
+}
+
+.header p {
+  color: var(--text-muted);
+  font-size: 1.125rem;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: 3rem;
+  align-items: start;
+}
+
+.card {
+  background: var(--bg-secondary);
+  padding: 3rem;
+  border-radius: 32px;
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-md);
+}
+
+.card h3 {
+  font-size: 1.75rem;
+  margin-bottom: 2rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.formGroup {
+  margin-bottom: 2rem;
+}
+
+.formGroup label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.inputWrapper {
+  position: relative;
+}
+
+.currency {
+  position: absolute;
+  left: 1.25rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--primary);
+  font-weight: 700;
+  font-size: 1.125rem;
+}
+
+.inputWrapper input {
+  width: 100%;
+  padding: 1rem 1.25rem 1rem 2.5rem;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  font-size: 1.125rem;
+  color: var(--text);
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.inputWrapper input:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.1);
+}
+
+.textarea {
+  width: 100%;
+  padding: 1.25rem;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  font-size: 1rem;
+  color: var(--text);
+  resize: vertical;
+  min-height: 120px;
+  transition: all 0.2s ease;
+}
+
+.textarea:focus {
+  outline: none;
+  border-color: var(--primary);
+}
+
+.submitBtn {
+  width: 100%;
+  background: var(--primary);
+  color: #000;
+  padding: 1.125rem;
+  border-radius: 16px;
+  font-weight: 700;
+  font-size: 1.125rem;
+  transition: all 0.2s ease;
+  margin-top: 1rem;
+}
+
+.submitBtn:hover:not(:disabled) {
+  background: var(--primary-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px -4px rgba(16, 185, 129, 0.4);
+}
+
+.receiptCard {
+  background: var(--bg-tertiary);
+  border: 2px dashed var(--primary);
+  padding: 3rem;
+  border-radius: 32px;
+  text-align: center;
+  animation: slideIn 0.4s ease;
+}
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateX(20px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+.successIcon {
+  width: 64px;
+  height: 64px;
+  background: var(--primary-light);
+  color: var(--primary);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1.5rem;
+}
+
+.receiptTitle {
+  color: var(--text);
+  margin-bottom: 8px;
+}
+
+.receiptSub {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
+.receiptDetails {
+  margin: 2.5rem 0;
+  text-align: left;
+  background: var(--bg-secondary);
+  padding: 2rem;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+}
+
+.detailItem {
+  display: flex;
+  justify-content: space-between;
+  padding: 1rem 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.detailItem:last-child {
+  border-bottom: none;
+}
+
+.detailLabel {
+  color: var(--text-muted);
+  font-size: 0.875rem;
+}
+
+.detailValId {
+  font-weight: 600;
+}
+
+.detailValAmount {
+  font-weight: 800;
+  color: var(--primary);
+}
+
+.downloadBtn {
+  width: 100%;
+  padding: 1rem;
+  border-radius: 16px;
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  background: var(--bg-secondary);
+  transition: all 0.2s ease;
+}
+
+.downloadBtn:hover {
+  background: var(--bg-tertiary);
+  border-color: var(--text-muted);
+}
+
+.emptyReceipt {
+  text-align: center;
+  padding: 40px;
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  color: var(--text-muted);
+}
+
+.loginPrompt {
+  text-align: center;
+  padding: 6rem 3rem;
+  background: var(--bg-secondary);
+  border-radius: 40px;
+  border: 1px solid var(--border);
+  max-width: 600px;
+  margin: 4rem auto;
+}
+
+.lockIcon {
+  color: var(--primary);
+  margin-bottom: 24px;
+}
+
+.loginPrompt h2 {
+  font-size: 2.5rem;
+  font-weight: 800;
+  margin-bottom: 1rem;
+}
+
+.loginBtnLink {
+  display: inline-block;
+  width: auto;
+  margin-top: 32px;
+  padding: 16px 40px;
+  background: var(--primary);
+  color: #000;
+  border-radius: 16px;
+  font-weight: 700;
+}
+
+.simplePrompt {
+  text-align: center;
+  padding: 4rem;
+  background: var(--bg-secondary);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+  margin-top: 4rem;
+}
+
+.simplePrompt h2 {
+  color: var(--error);
+  font-size: 2rem;
+  margin-bottom: 1rem;
+}
+
+.simpleLink {
+  display: inline-block;
+  margin-top: 2rem;
+  color: var(--primary);
+  font-weight: 700;
+  text-decoration: underline;
+}
+
+@media (max-width: 900px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}
