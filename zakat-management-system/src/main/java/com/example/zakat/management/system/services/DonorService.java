@@ -46,6 +46,7 @@ public class DonorService {
         response.setRecepNum(fresh.getRecepNum());
         response.setDonorName(donor.getName());
         response.setAmount(fresh.getAmount());
+        response.setDescription(request.getDescription());
         response.setIssuedAt(fresh.getIssuedAt());
 
         return response;
@@ -70,5 +71,13 @@ public class DonorService {
         Donor donor = donorRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Donor not found with id: " + id));
         return donorMapper.toResponse(donor);
+    }
+
+    @Transactional(readOnly = true)
+    public Double getTotalDonationsByDonorId(Long donorId) {
+        if (!donorRepository.existsById(donorId)) {
+            throw new ResourceNotFoundException("Donor not found with id: " + donorId);
+        }
+        return receiptRepository.sumAmountsByDonorId(donorId);
     }
 }

@@ -29,7 +29,7 @@ public class User {
     @Column(name = "password", nullable = false)
     private String password;
 
-    @Column(name = "role", nullable = false, insertable = false, updatable = false)
+    @Column(name = "role", insertable = false, updatable = false)
     private String role;
 
     @CreationTimestamp

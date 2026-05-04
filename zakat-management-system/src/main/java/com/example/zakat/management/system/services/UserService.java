@@ -10,6 +10,9 @@ import com.example.zakat.management.system.events.UserRegisteredEvent;
 import com.example.zakat.management.system.exceptions.DuplicateResourceException;
 import com.example.zakat.management.system.exceptions.ResourceNotFoundException;
 import com.example.zakat.management.system.mappers.UserMapper;
+import com.example.zakat.management.system.repositories.AdminRepository;
+import com.example.zakat.management.system.repositories.BeneficiaryRepository;
+import com.example.zakat.management.system.repositories.DonorRepository;
 import com.example.zakat.management.system.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
@@ -25,35 +28,48 @@ public class UserService {
 
     private final ApplicationEventPublisher applicationEventPublisher;
     private final UserRepository userRepository;
+    private final AdminRepository adminRepository;
+    private final DonorRepository donorRepository;
+    private final BeneficiaryRepository beneficiaryRepository;
     private final UserMapper userMapper;
     private final BCryptPasswordEncoder passwordEncoder;
 
+    @Transactional
     public UserResponse register(RegisterRequest request) {
         if (userRepository.countByEmail(request.getEmail()) > 0) {
             throw new DuplicateResourceException("Email already in use: " + request.getEmail());
         }
 
-        User user;
         String role = request.getRole();
+        String encodedPassword = passwordEncoder.encode(request.getPassword());
+        User saved;
 
         if ("ADMIN".equals(role)) {
-            user = new Admin();
+            Admin admin = new Admin();
+            admin.setName(request.getName());
+            admin.setEmail(request.getEmail());
+            admin.setPassword(encodedPassword);
+            admin.setRole(role);
+            saved = adminRepository.save(admin);
         } else if ("DONOR".equals(role)) {
-            user = new Donor();
+            Donor donor = new Donor();
+            donor.setName(request.getName());
+            donor.setEmail(request.getEmail());
+            donor.setPassword(encodedPassword);
+            donor.setRole(role);
+            saved = donorRepository.save(donor);
         } else if ("BENEFICIARY".equals(role)) {
-            user = new Beneficiary();
+            Beneficiary beneficiary = new Beneficiary();
+            beneficiary.setName(request.getName());
+            beneficiary.setEmail(request.getEmail());
+            beneficiary.setPassword(encodedPassword);
+            beneficiary.setRole(role);
+            saved = beneficiaryRepository.save(beneficiary);
         } else {
             throw new IllegalArgumentException("Invalid role: " + role);
         }
 
-        user.setName(request.getName());
-        user.setEmail(request.getEmail());
-        user.setPassword(passwordEncoder.encode(request.getPassword()));
-        user.setRole(role);
-
-        User saved = userRepository.save(user);
-
-        applicationEventPublisher.publishEvent(new UserRegisteredEvent(user.getName(), user.getEmail(), role));
+        applicationEventPublisher.publishEvent(new UserRegisteredEvent(saved.getName(), saved.getEmail(), role));
 
         return userMapper.toResponse(saved);
     }

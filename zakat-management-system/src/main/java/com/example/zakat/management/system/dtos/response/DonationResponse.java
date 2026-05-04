@@ -10,5 +10,6 @@ public class DonationResponse {
     private String recepNum;
     private String donorName;
     private BigDecimal amount;
+    private String description;
     private Instant issuedAt;
 }

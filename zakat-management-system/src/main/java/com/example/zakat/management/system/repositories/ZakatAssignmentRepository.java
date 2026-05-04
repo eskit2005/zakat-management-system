@@ -19,7 +19,7 @@ public interface ZakatAssignmentRepository extends JpaRepository<ZakatAssignment
     // List<ZakatAssignment> findAll();
     List<ZakatAssignment> findAll();
 
-    @Query("SELECT COALESCE(SUM(z.amountAssigned), 0) FROM ZakatAssignment z")
+    @Query("SELECT COALESCE(SUM(z.amountAssigned), 0) FROM ZakatAssignment z WHERE z.inventory IS NULL")
     Double sumAllAmounts();
 
     // @Query(value = "SELECT * FROM zucchini_assignment WHERE inven_id = :invenId", nativeQuery = true)

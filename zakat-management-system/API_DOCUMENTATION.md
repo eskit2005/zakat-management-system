@@ -32,25 +32,26 @@
 | 9 | GET | /api/donors/{id} | Get donor details by ID | DONOR, ADMIN |
 | 10 | POST | /api/donors/{id}/beneficiaries | Direct donation to beneficiary | DONOR, ADMIN |
 | 11 | GET | /api/donors/{id}/beneficiaries | Get beneficiaries donor donated to | DONOR, ADMIN |
+| 12 | GET | /api/donors/{id}/total-donations | Get total amount donated by a donor | DONOR, ADMIN |
 | | | **Beneficiary** | | |
-| 12 | PATCH | /api/beneficiaries/form | Beneficiary submits application form | BENEFICIARY |
-| 13 | GET | /api/beneficiaries | Get all beneficiaries | ADMIN |
-| 14 | GET | /api/beneficiaries/{id} | Get specific beneficiary by ID | ADMIN |
-| 15 | GET | /api/beneficiaries/queue | Get eligible beneficiaries by priority | ADMIN, DONOR |
+| 13 | PATCH | /api/beneficiaries/form | Beneficiary submits/updates application form | BENEFICIARY |
+| 14 | GET | /api/beneficiaries | Get all beneficiaries | ADMIN |
+| 15 | GET | /api/beneficiaries/{id} | Get specific beneficiary by ID | ADMIN, BENEFICIARY |
+| 16 | GET | /api/beneficiaries/queue | Get eligible beneficiaries by priority | ADMIN, DONOR |
 | | | **Zakat Assignment** | | |
-| 16 | POST | /api/assignments | Admin assigns money/inventory to beneficiary | ADMIN |
-| 17 | GET | /api/assignments | Get all zucchini assignments | ADMIN |
+| 17 | POST | /api/assignments | Admin assigns money/inventory to beneficiary | ADMIN |
+| 18 | GET | /api/assignments | Get all assignments | ADMIN |
 | | | **Inventory** | | |
-| 18 | POST | /api/inventory | Donor donates inventory item | DONOR |
-| 19 | GET | /api/inventory | Get all inventory items | ADMIN |
-| 20 | GET | /api/inventory/{id} | Get specific inventory item | ADMIN |
-| 21 | GET | /api/inventory/available | Get available inventory items | ADMIN |
+| 19 | POST | /api/inventory | Donor donates inventory item | DONOR |
+| 20 | GET | /api/inventory | Get all inventory items | ADMIN |
+| 21 | GET | /api/inventory/{id} | Get specific inventory item | ADMIN |
+| 22 | GET | /api/inventory/available | Get available inventory items | ADMIN |
 | | | **Receipt** | | |
-| 22 | GET | /api/receipts | Get all receipts | ADMIN |
-| 23 | GET | /api/receipts/donor/{donorId} | Get all receipts for a donor | ADMIN, DONOR |
+| 23 | GET | /api/receipts | Get all receipts | ADMIN |
+| 24 | GET | /api/receipts/donor/{donorId} | Get all receipts for a donor | ADMIN, DONOR |
 | | | **Dashboard** | | |
-| 24 | GET | /api/dashboard | Get dashboard summary | ADMIN |
-| 25 | GET | /api/report | Get comprehensive system report | Public |
+| 25 | GET | /api/dashboard | Get dashboard summary | ADMIN |
+| 26 | GET | /api/report | Get comprehensive system report | Public |
 
 ---
 
@@ -157,17 +158,19 @@
 ```json
 {
   "donorId": 1,
-  "amount": 5000.00
+  "amount": 5000.00,
+  "description": "Optional notes"
 }
 ```
 
 **Response (201):**
 ```json
 {
-  "id": 1,
+  "receiptId": 1,
   "recepNum": "ZKT-2604-K9R3P",
   "donorName": "John Doe",
   "amount": 5000.00,
+  "description": "Optional notes",
   "issuedAt": "2026-04-28T10:05:00Z"
 }
 ```
@@ -182,7 +185,8 @@
 {
   "id": 1,
   "name": "John Doe",
-  "email": "john@example.com"
+  "email": "john@example.com",
+  "createdAt": "2026-04-28T10:00:00Z"
 }
 ```
 
@@ -204,16 +208,35 @@
 ---
 
 ### GET /api/donors/{id}/beneficiaries
-**Purpose:** Get beneficiaries the donor has donated to (requires auth)
+**Purpose:** Get full details of beneficiaries the donor has donated to (requires auth)
 
-**Response (200):** `[3, 5, 8]`
+**Response (200):** 
+```json
+[
+  {
+    "id": 3,
+    "userId": 3,
+    "fullName": "Jane Beneficiary",
+    "reason": "Lost my job",
+    "priorityScore": 70,
+    "eligible": true
+  }
+]
+```
+
+---
+
+### GET /api/donors/{id}/total-donations
+**Purpose:** Get the sum of all money donated by a specific donor (requires auth)
+
+**Response (200):** `7500.00`
 
 ---
 
 ## 4. Beneficiary Endpoints
 
 ### PATCH /api/beneficiaries/form
-**Purpose:** Beneficiary submits application form (requires auth)
+**Purpose:** Beneficiary submits or updates application form (requires auth). Multiple submissions are allowed and will refresh the `checkedAt` timestamp.
 
 **Request Body:**
 ```json
@@ -237,7 +260,8 @@
 {
   "id": 3,
   "priorityScore": 70,
-  "eligible": false
+  "eligible": true,
+  "checkedAt": "2026-05-04T12:00:00Z"
 }
 ```
 
@@ -249,28 +273,32 @@
 **Response (200):**
 ```json
 [
-  { "id": 3, "priorityScore": 70, "eligible": false }
+  { "id": 3, "priorityScore": 70, "eligible": true }
 ]
 ```
 
 ---
 
 ### GET /api/beneficiaries/{id}
-**Purpose:** Get specific beneficiary (requires auth)
+**Purpose:** Get specific beneficiary details (requires auth as ADMIN or the logged-in BENEFICIARY)
 
 **Response (200):**
 ```json
 {
   "id": 3,
+  "fullName": "Jane Beneficiary",
+  "age": 35,
   "priorityScore": 70,
-  "eligible": false
+  "eligible": true,
+  "totalReceivedValue": 500.00,
+  "checkedAt": "2026-05-04T12:00:00Z"
 }
 ```
 
 ---
 
 ### GET /api/beneficiaries/queue
-**Purpose:** Get eligible beneficiaries sorted by priority (requires auth as admin)
+**Purpose:** Get eligible beneficiaries sorted by priority (requires auth as ADMIN or DONOR)
 
 **Response (200):**
 ```json

@@ -3,6 +3,7 @@ package com.example.zakat.management.system.controllers;
 import com.example.zakat.management.system.dtos.request.DonationRequest;
 import com.example.zakat.management.system.dtos.request.DirectDonationRequest;
 import com.example.zakat.management.system.dtos.response.DonationResponse;
+import com.example.zakat.management.system.dtos.response.BeneficiaryResponse;
 import com.example.zakat.management.system.services.DonorService;
 import com.example.zakat.management.system.services.DirectDonationService;
 import jakarta.validation.Valid;
@@ -40,7 +41,12 @@ public class DonorController {
     }
 
     @GetMapping("/{id}/beneficiaries")
-    public ResponseEntity<List<Long>> getDonatedBeneficiaries(@PathVariable Long id) {
+    public ResponseEntity<List<BeneficiaryResponse>> getDonatedBeneficiaries(@PathVariable Long id) {
         return ResponseEntity.ok(directDonationService.getBeneficiariesDonatedTo(id));
+    }
+
+    @GetMapping("/{id}/total-donations")
+    public ResponseEntity<Double> getTotalDonations(@PathVariable Long id) {
+        return ResponseEntity.ok(donorService.getTotalDonationsByDonorId(id));
     }
 }

@@ -39,18 +39,7 @@ public class InventoryService {
         return inventoryMapper.toResponse(inventoryRepository.save(inventory));
     }
 
-    @Transactional
-    public InventoryResponse addItemFromDonor(ItemDonationRequest request) {
-        Inventory inventory = new Inventory();
-        inventory.setName(request.getName());
-        inventory.setAppoxValue(request.getAppoxValue());
-        inventory.setStatus("AVAILABLE");
-        Donor donor = donorRepository.findById(request.getDonorId())
-                .orElseThrow(() -> new ResourceNotFoundException("Donor not found with id: " + request.getDonorId()));
-        inventory.setDonor(donor);
 
-        return inventoryMapper.toResponse(inventoryRepository.save(inventory));
-    }
 
     @Transactional(readOnly = true)
     public List<InventoryResponse> getAllItems() {

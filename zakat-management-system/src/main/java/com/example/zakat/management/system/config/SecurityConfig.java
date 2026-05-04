@@ -75,7 +75,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/beneficiaries").hasRole(Role.ADMIN.name())
 .requestMatchers(HttpMethod.GET, "/api/beneficiaries/queue").hasAnyRole(Role.ADMIN.name(), Role.DONOR.name())
                         .requestMatchers(HttpMethod.GET, "/api/beneficiaries").hasRole(Role.ADMIN.name())
-                        .requestMatchers(HttpMethod.GET, "/api/beneficiaries/{id}").hasRole(Role.ADMIN.name())
+                        .requestMatchers(HttpMethod.GET, "/api/beneficiaries/{id}").hasAnyRole(Role.ADMIN.name(), Role.BENEFICIARY.name())
                         .requestMatchers(HttpMethod.GET, "/api/receipts").hasRole(Role.ADMIN.name())
                         .requestMatchers(HttpMethod.GET, "/api/receipts/donor/**").hasAnyRole(Role.ADMIN.name(), Role.DONOR.name())
 
@@ -87,6 +87,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/donors/{id}").hasAnyRole(Role.DONOR.name(), Role.ADMIN.name())
                         .requestMatchers(HttpMethod.POST, "/api/donors/{id}/beneficiaries").hasAnyRole(Role.DONOR.name(), Role.ADMIN.name())
                         .requestMatchers(HttpMethod.GET, "/api/donors/{id}/beneficiaries").hasAnyRole(Role.DONOR.name(), Role.ADMIN.name())
+                        .requestMatchers(HttpMethod.GET, "/api/donors/{id}/total-donations").hasAnyRole(Role.DONOR.name(), Role.ADMIN.name())
 
                         // 5. Beneficiary Only
                         .requestMatchers(HttpMethod.PATCH, "/api/beneficiaries/form").hasRole(Role.BENEFICIARY.name())

@@ -17,12 +17,12 @@ public class BeneficiaryDonor {
 
     @MapsId("DId")
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "D_id", insertable = false, updatable = false)
+    @JoinColumn(name = "D_id")
     private Donor donor;
 
     @MapsId("BId")
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "B_id", insertable = false, updatable = false)
+    @JoinColumn(name = "B_id")
     private Beneficiary beneficiary;
 
     @Column(name = "amount", nullable = false)

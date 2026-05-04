@@ -78,14 +78,8 @@ public class ZakatAssignmentService {
             inventory.setStatus("ASSIGNED");
             inventoryRepository.save(inventory);
         } else {
-            List<Receipt> allReceipts = receiptRepository.findAll();
-            BigDecimal totalDonated = allReceipts.stream()
-                    .map(Receipt::getAmount)
-                    .reduce(BigDecimal.ZERO, BigDecimal::add);
-
-            BigDecimal totalAssigned = zakatAssignmentRepository.findAll().stream()
-                    .map(ZakatAssignment::getAmountAssigned)
-                    .reduce(BigDecimal.ZERO, BigDecimal::add);
+            BigDecimal totalDonated = BigDecimal.valueOf(receiptRepository.sumAllAmounts());
+            BigDecimal totalAssigned = BigDecimal.valueOf(zakatAssignmentRepository.sumAllAmounts());
 
             BigDecimal remaining = totalDonated.subtract(totalAssigned);
 

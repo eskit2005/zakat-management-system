@@ -26,10 +26,6 @@ public class BeneficiaryService {
         Beneficiary beneficiary = beneficiaryRepository.findById(request.getBeneficiaryId())
                 .orElseThrow(() -> new ResourceNotFoundException("Beneficiary not found with id: " + request.getBeneficiaryId()));
 
-        if (beneficiary.getCheckedAt() != null) {
-            throw new IllegalStateException("Form already submitted for this beneficiary");
-        }
-
         beneficiary.setReason(request.getReason());
         beneficiary.setDependents(request.getDependents());
         beneficiary.setIncome(request.getIncome());
@@ -97,9 +93,13 @@ public class BeneficiaryService {
             } else {
                 // Wealthy enough and no debt: Ineligible for Zakat
                 beneficiary.setEligible(false);
-                beneficiary.setRejectReason("Income exceeds the Nisab threshold and does not fall under the Gharmin (debt) exception.");
+                beneficiary.setRejectReason("Current household income exceeds the Nisab threshold. As per distribution guidelines, priority is given to those below this threshold unless significant debt is present.");
                 score = 0; // Strip priority score since they cannot receive funds
             }
+        } else if (score <= 0 && beneficiary.getTotalReceivedValue() != null && beneficiary.getTotalReceivedValue().compareTo(BigDecimal.ZERO) > 0) {
+            // Priority dropped to 0 due to aid already received
+            beneficiary.setEligible(false);
+            beneficiary.setRejectReason("Your application has been deferred as you have reached the current support limit for this cycle. We aim to ensure equitable distribution among all eligible community members.");
         } else {
             // Below Nisab: Eligible as Fakir/Miskin
             beneficiary.setEligible(true);

@@ -27,4 +27,7 @@ public interface ReceiptRepository extends JpaRepository<Receipt, ReceiptId> {
 
     @Query("SELECT COALESCE(SUM(r.amount), 0) FROM Receipt r")
     Double sumAllAmounts();
+
+    @Query(value = "SELECT COALESCE(SUM(amount), 0) FROM receipt WHERE d_id = :donorId", nativeQuery = true)
+    Double sumAmountsByDonorId(@Param("donorId") Long donorId);
 }
